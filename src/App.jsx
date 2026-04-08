@@ -84,13 +84,9 @@ export default function App() {
   const syncLabel =
     {
       idle: null,
-      saving: (
-        <>
-          <span className="spin">↻</span> Saving…
-        </>
-      ),
-      saved: <>✓ Saved</>,
-      error: <>⚠ Failed</>,
+      saving: <>Saving...</>,
+      saved: <>Saved</>,
+      error: <>Failed</>,
     }[syncStatus];
 
   if (loading)
@@ -100,12 +96,12 @@ export default function App() {
         <div className="app">
           <header className="header">
             <div className="header-brand">
-              🍳 Workshop<span>Studio</span>
+              Workshop<span>Studio</span>
             </div>
           </header>
           <div className="loading-screen">
             <div className="loading-spinner" />
-            <span>Loading your workshops…</span>
+            <span>Loading your workshops...</span>
           </div>
         </div>
       </>
@@ -117,15 +113,12 @@ export default function App() {
       <div className="app">
         <header className="header">
           <div className="header-brand">
-            🍳 Workshop<span>Studio</span>
+            Workshop Manager
           </div>
           <div
             className="header-right"
             style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
           >
-            {syncLabel && (
-              <span className={`sync-badge sync-${syncStatus}`}>{syncLabel}</span>
-            )}
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => setShowCreate(true)}
@@ -135,22 +128,17 @@ export default function App() {
           </div>
         </header>
 
-        <div className="hero-band">
+        {/* <div className="hero-band">
           <div className="hero-title">Your Workshops</div>
           <div className="hero-subtitle">
             Plan, scale, and execute culinary workshops with ease
           </div>
-        </div>
+        </div> */}
 
         <main className="main">
           {workshops.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">🧑‍🍳</div>
               <h3>No workshops yet</h3>
-              <p style={{ marginBottom: "1.5rem" }}>
-                Create your first workshop to get started with planning, ingredients, and
-                RSVPs.
-              </p>
               <button
                 className="btn btn-primary"
                 onClick={() => setShowCreate(true)}
@@ -172,6 +160,11 @@ export default function App() {
                 );
                 const overBudget = ws.budget > 0 && totalCost > ws.budget;
                 const pct = Math.min((ws.rsvpCount / ws.capacity) * 100, 100);
+                const timelineSections = ws.timeline ? Object.values(ws.timeline) : [];
+                const allTasks = timelineSections.flatMap(sec => (Array.isArray(sec) ? sec : []));
+                const doneTasks = allTasks.filter(t => t && t.done).length;
+                const totalTasks = allTasks.length;
+                const prepPct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
                 return (
                   <div
                     key={ws.id}
@@ -182,7 +175,7 @@ export default function App() {
                     }}
                   >
                     <div className="card-header">
-                      <div className="card-date-badge">📅 {formatDate(ws.date)}</div>
+                      <div className="card-date-badge">{formatDate(ws.date)}</div>
                       <div className="card-title">{ws.name}</div>
                     </div>
                     <div className="card-body">
@@ -218,7 +211,19 @@ export default function App() {
                       </div>
                       <div className="card-meta">
                         <span>{Math.round(pct)}% full</span>
-                        <span>{ws.ingredients.length} ingredients</span>
+                        {/* <span className="card-meta-right">
+                          <span>
+                            {totalTasks > 0 ? `${doneTasks}/${totalTasks} tasks` : "No checklist"}
+                          </span>
+                          {totalTasks > 0 && (
+                            <span className="mini-progress" aria-hidden="true">
+                              <span
+                                className="mini-progress-fill"
+                                style={{ width: prepPct + "%" }}
+                              />
+                            </span>
+                          )}
+                        </span> */}
                       </div>
                     </div>
                   </div>
@@ -229,7 +234,7 @@ export default function App() {
                 onClick={() => setShowCreate(true)}
               >
                 <div className="card-add-content">
-                  <div className="card-add-icon">＋</div>
+                  <div className="card-add-icon">+</div>
                   <div className="card-add-label">New Workshop</div>
                 </div>
               </div>

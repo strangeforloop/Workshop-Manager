@@ -9,7 +9,7 @@ export function CreateModal({ onClose, onCreate }) {
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title">Create Workshop</div>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="close-btn" onClick={onClose}>Close</button>
         </div>
         <div className="modal-body">
           <div className="form-group">

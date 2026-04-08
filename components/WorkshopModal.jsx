@@ -90,7 +90,7 @@ export function WorkshopModal({
                 marginTop: "0.2rem",
               }}
             >
-              📅 {formatDate(ws.date)}
+              {formatDate(ws.date)}
             </div>
           </div>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -98,7 +98,7 @@ export function WorkshopModal({
               Delete
             </button>
             <button className="close-btn" onClick={onClose}>
-              ×
+              Close
             </button>
           </div>
         </div>
@@ -106,9 +106,9 @@ export function WorkshopModal({
         <div className="modal-body">
           <div className="tabs">
             {[
-              { id: "rsvp", label: "👥 RSVPs" },
-              { id: "ingredients", label: "🧂 Ingredients & Budget" },
-              { id: "timeline", label: "📋 Timeline" },
+              { id: "rsvp", label: "RSVPs" },
+              { id: "ingredients", label: "Ingredients & Budget" },
+              // { id: "timeline", label: "Timeline" },
             ].map(t => (
               <button
                 key={t.id}

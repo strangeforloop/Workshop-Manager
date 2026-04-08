@@ -3,11 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "Missing Supabase env vars. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in a .env.local file.",
-  );
-}
+// Only treat it as configured if it looks like a real HTTP(S) URL.
+export const hasSupabaseConfig =
+  Boolean(supabaseUrl && supabaseAnonKey) &&
+  /^https?:\/\//i.test(String(supabaseUrl));
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = hasSupabaseConfig
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 

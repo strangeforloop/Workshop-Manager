@@ -17,46 +17,30 @@ export function RsvpTab({ ws, update }) {
           style={{ cursor: "pointer", border: "1px solid rgba(255,255,255,0.4)" }}
           onClick={() => setShowPartiful(!showPartiful)}
         >
-          🎉 Connect Partiful
+          Connect Partiful
         </button>
       </div>
 
       {showPartiful && (
-        <div
-          style={{
-            background: "var(--green-light)",
-            border: "1px solid #b2d9be",
-            borderRadius: 10,
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
-          <div style={{ fontWeight: 600, marginBottom: "0.5rem", color: "var(--green)" }}>
-            Connect Partiful Event
-          </div>
-          <div
-            style={{
-              fontSize: "0.85rem",
-              color: "var(--text-muted)",
-              marginBottom: "0.75rem",
-            }}
-          >
+        <div className="partiful-panel">
+          <div className="partiful-panel-title">Connect Partiful Event</div>
+          <div className="partiful-panel-copy">
             Paste your Partiful event link below. Once connected, RSVP count syncs automatically.
           </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
             <input
               className="form-input"
               placeholder="https://partiful.com/e/..."
               value={partifulUrl}
               onChange={e => setPartifulUrl(e.target.value)}
-              style={{ flex: 1 }}
+              style={{ flex: 1, minWidth: "12rem" }}
             />
             <button
               className="btn btn-primary"
               onClick={() => {
                 if (partifulUrl) {
                   alert(
-                    "✅ Partiful connected! In a full integration, RSVPs would sync automatically. For now, update manually below.",
+                    "Partiful connected. In a full integration, RSVPs would sync automatically. For now, update manually below.",
                   );
                   setShowPartiful(false);
                 }
@@ -84,7 +68,7 @@ export function RsvpTab({ ws, update }) {
         <div className="rsvp-count-input">
           <label>RSVP Count:</label>
           <div className="stepper">
-            <button onClick={() => update({ rsvpCount: Math.max(0, ws.rsvpCount - 1) })}>−</button>
+            <button onClick={() => update({ rsvpCount: Math.max(0, ws.rsvpCount - 1) })}>-</button>
             <span>{ws.rsvpCount}</span>
             <button onClick={() => update({ rsvpCount: Math.min(ws.capacity, ws.rsvpCount + 1) })}>+</button>
           </div>
@@ -155,7 +139,7 @@ export function RsvpTab({ ws, update }) {
           }}
         >
           <div style={{ fontSize: "0.9rem" }}>
-            📐 <strong>Scale factor: {(ws.rsvpCount / ws.baseServings).toFixed(2)}×</strong> — ingredients will be
+            <strong>Scale factor: {(ws.rsvpCount / ws.baseServings).toFixed(2)}x</strong> - ingredients will be
             multiplied by this amount
           </div>
         </div>

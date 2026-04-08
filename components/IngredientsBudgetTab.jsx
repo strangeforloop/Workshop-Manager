@@ -47,7 +47,7 @@ export function IngredientsBudgetTab({
         </div>
       </div>
 
-      <div
+      {/* <div
         style={{
           background: "#FEF7F0",
           border: "1px solid var(--accent-light)",
@@ -59,20 +59,19 @@ export function IngredientsBudgetTab({
           lineHeight: 1.5,
         }}
       >
-        💡{" "}
         <strong style={{ color: "var(--text)" }}>How costs work:</strong> Enter{" "}
         <em>Cost per unit</em> (e.g. $0.15 per gram) and <em>Package size</em> (e.g. 1000g bag).
-        The app calculates total cost = cost/unit × scaled quantity, and how many packages you
-        need to buy.
+        The app calculates total cost = cost/unit x scaled quantity, and how many packages you
+        need to buyi.
         {isScaled && (
           <span>
             {" "}
             Currently scaled{" "}
-            <strong style={{ color: "var(--accent)" }}>{scale.toFixed(2)}×</strong> for{" "}
+            <strong style={{ color: "var(--accent)" }}>{scale.toFixed(2)}x</strong> for{" "}
             {attendees} attendees.
           </span>
         )}
-      </div>
+      </div> */}
 
       <div style={{ overflowX: "auto" }}>
         <table className="ingredient-table">
@@ -172,7 +171,7 @@ export function IngredientsBudgetTab({
                         color: ing.pkgsNeeded > 0 ? "var(--green)" : "var(--text-muted)",
                       }}
                     >
-                      {ing.pkgsNeeded > 0 ? `×${ing.pkgsNeeded}` : "—"}
+                      {ing.pkgsNeeded > 0 ? `x${ing.pkgsNeeded}` : "-"}
                     </span>
                   </td>
                 )}
@@ -226,7 +225,7 @@ export function IngredientsBudgetTab({
                   </div>
                 </td>
                 <td>
-                  <button className="icon-btn" onClick={() => removeIngredient(ing.id)}>🗑</button>
+                  <button className="icon-btn" onClick={() => removeIngredient(ing.id)}>Remove</button>
                 </td>
               </tr>
             ))}
@@ -258,7 +257,7 @@ export function IngredientsBudgetTab({
       </div>
 
       <button className="add-row-btn" onClick={addIngredient}>
-        ＋ Add Ingredient
+        + Add Ingredient
       </button>
 
       <div className="divider" style={{ marginTop: "1.5rem" }} />
@@ -291,8 +290,8 @@ export function IngredientsBudgetTab({
           <div style={{ paddingBottom: "0.1rem" }}>
             <span className={`chip ${budgetLeft < 0 ? "chip-orange" : "chip-green"}`}>
               {budgetLeft < 0
-                ? `⚠️ $${Math.abs(budgetLeft).toFixed(2)} over budget`
-                : `✓ $${budgetLeft.toFixed(2)} under budget`}
+                ? `$${Math.abs(budgetLeft).toFixed(2)} over budget`
+                : `$${budgetLeft.toFixed(2)} under budget`}
             </span>
           </div>
         )}

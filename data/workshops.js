@@ -1,4 +1,4 @@
-import { supabase } from "./supabaseClient";
+import { supabase, hasSupabaseConfig } from "./supabaseClient";
 
 function uuid() {
   // Supabase tables are commonly UUID-based; prefer valid UUIDs for inserts.
@@ -57,6 +57,10 @@ function fromIngredientRow(row) {
 }
 
 export async function loadWorkshops() {
+  if (!hasSupabaseConfig || !supabase) {
+    // No Supabase config present — render an empty list instead of crashing.
+    return [];
+  }
   const { data: wsRows, error: wsErr } = await supabase
     .from("workshops")
     .select("*")
@@ -94,6 +98,10 @@ export async function loadWorkshops() {
 }
 
 export async function saveWorkshops(workshops) {
+  if (!hasSupabaseConfig || !supabase) {
+    // In local/dev without Supabase, pretend save succeeded so UI stays responsive.
+    return true;
+  }
   try {
     const wsRows = (workshops || []).map(toWorkshopRow);
     const { error: wsErr } = await supabase.from("workshops").upsert(wsRows);
@@ -135,6 +143,9 @@ export async function saveWorkshops(workshops) {
 }
 
 export async function deleteWorkshopById(workshopId) {
+  if (!hasSupabaseConfig || !supabase) {
+    return true;
+  }
   try {
     // If you have ON DELETE CASCADE on ingredients.workshop_id, the ingredients delete is redundant.
     await supabase.from("ingredients").delete().eq("workshop_id", workshopId);
@@ -177,10 +188,7 @@ export function createWorkshopFromForm(form) {
     rsvpCount: 0,
     baseServings: 4,
     timeline: JSON.parse(JSON.stringify(DEFAULT_TIMELINE)),
-    ingredients: [
-      { id: uuid(), name: "Flour", baseQty: 200, unit: "g", costPer: 0.15, packageSize: 1000 },
-      { id: uuid(), name: "Butter", baseQty: 100, unit: "g", costPer: 0.8, packageSize: 250 },
-    ],
+    ingredients: [],
   };
 }
 
