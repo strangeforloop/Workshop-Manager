@@ -80,3 +80,31 @@ Two tables: `workshops` (snake_case columns) and `ingredients` (with `workshop_i
 ### Theme
 
 Central MUI theme in `src/theme/workshopTheme.js`. Use the exported `workshopPalette` object for raw color tokens (e.g. `workshopPalette.tealSolid`, `workshopPalette.accent`). Typography: Lora for headings, Plus Jakarta Sans for body, Poppins for captions/subtitles.
+
+## Working Principles
+
+### Scope and Feature Control
+- **Implement only what is explicitly requested** — do not add features, optimizations, or "nice to haves" unless specifically asked
+- If you see an opportunity for improvement, **describe it and ask first** rather than implementing it
+- Stick to the minimal change needed to complete the request
+
+### Styling and Formatting
+- **NEVER make inline style changes** unless explicitly requested to modify styles
+- Use the existing theme system (`workshopTheme.js` and `workshopPalette`) — do not add inline styles or style props
+- If styling improvements are needed, ask first and point to the theme file for any changes
+
+### Architectural Changes
+- **Always confirm before making architectural changes**, including:
+  - Changing component structure or responsibilities
+  - Adding new dependencies or libraries
+  - Modifying data flow or state management patterns
+  - Restructuring file organization
+  - Changing the database schema or Supabase structure
+- When proposing architectural changes, explain the reasoning and wait for approval
+
+### Workflow for Changes
+1. Understand the specific request
+2. If the request is ambiguous or could benefit from architectural changes, **ask clarifying questions first**
+3. Propose a plan for complex changes before implementing
+4. Make the minimal change needed
+5. Confirm completion without adding unrequested features
