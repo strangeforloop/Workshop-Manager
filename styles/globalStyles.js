@@ -1,6 +1,6 @@
-/* Serif-only: Fraunces (soft, bubbly display) + Literata (readable body). Warm kitchen palette — no generic sans stack. */
+/* Legacy stylesheet mirror: Lora serif + Plus Jakarta Sans with Poppins secondary. */
 export const FONTS = `
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 `;
 
 export const BASE_STYLES = `
@@ -28,9 +28,10 @@ export const BASE_STYLES = `
     --shadow: 0 6px 24px rgba(90, 62, 66, 0.08);
     --shadow-lg: 0 14px 40px rgba(90, 62, 66, 0.12);
     --radius-bubble: 22px;
-    --radius-pill: 9999px;
-    --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
-    --font-serif: 'Literata', Georgia, 'Times New Roman', serif;
+    --radius-pill: 10px;
+    --font-display: 'Lora', Georgia, 'Times New Roman', serif;
+    --font-serif: 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif;
+    --font-secondary: 'Poppins', 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif;
   }
   body {
     background: var(--cream);
@@ -208,14 +209,14 @@ export const COMPONENT_STYLES = `
   .mini-progress {
     width: 84px;
     height: 6px;
-    border-radius: 999px;
+    border-radius: 10px;
     background: rgba(0,0,0,0.06);
     overflow: hidden;
   }
   .mini-progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--accent), var(--teal));
-    border-radius: 999px;
+    border-radius: 10px;
     transition: width 0.4s ease;
   }
   .card-add {

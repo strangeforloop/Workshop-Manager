@@ -1,3 +1,23 @@
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Select,
+  MenuItem,
+  FormControl,
+  LinearProgress,
+} from "@mui/material";
+import { workshopPalette } from "../src/theme/workshopTheme";
+
 export function IngredientsBudgetTab({
   ws,
   scale,
@@ -7,11 +27,13 @@ export function IngredientsBudgetTab({
   addIngredient,
   updateIngredient,
   removeIngredient,
-  update,
 }) {
   const units = ["g", "kg", "ml", "L", "tsp", "tbsp", "cup", "oz", "lb", "piece", "bunch", "pinch"];
   const attendees = ws.rsvpCount > 0 ? ws.rsvpCount : ws.baseServings;
   const isScaled = ws.rsvpCount > 0;
+
+  /** Sticky header + tbody area ≈ four ingredient rows (scroll beyond that) */
+  const INGREDIENT_TABLE_SCROLL_MAX_PX = 360;
 
   const rows = ws.ingredients.map(ing => {
     const baseQty = parseFloat(ing.baseQty) || 0;
@@ -25,278 +47,413 @@ export function IngredientsBudgetTab({
   });
 
   return (
-    <div>
-      <div className="budget-summary" style={{ marginBottom: "1.5rem" }}>
-        <div className="budget-item">
-          <div className="budget-value">${totalCost.toFixed(2)}</div>
-          <div className="budget-label">
-            {isScaled ? `Total for ${attendees} ppl` : `Base batch cost`}
-          </div>
-        </div>
-        <div className="budget-item">
-          <div className={`budget-value ${ws.budget > 0 && budgetLeft < 0 ? "budget-over" : ""}`}>
-            {ws.budget > 0 ? `$${Math.abs(budgetLeft).toFixed(2)} ${budgetLeft < 0 ? "over" : "left"}` : "—"}
-          </div>
-          <div className="budget-label">
-            {ws.budget > 0 ? `of $${ws.budget} budget` : "no budget set"}
-          </div>
-        </div>
-        <div className="budget-item">
-          <div className="budget-value">${costPerPerson.toFixed(2)}</div>
-          <div className="budget-label">per person</div>
-        </div>
-      </div>
-
-      {/* <div
-        style={{
-          background: "#FEF7F0",
-          border: "1px solid var(--accent-light)",
-          borderRadius: 10,
-          padding: "0.85rem 1rem",
-          marginBottom: "1.25rem",
-          fontSize: "0.84rem",
-          color: "var(--text-muted)",
-          lineHeight: 1.5,
+    <Box
+      className="ingredient-table"
+      sx={{
+        flex: 1,
+        minHeight: 0,
+        minWidth: 0,
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        sx={{
+          flexShrink: 0,
+          background: "linear-gradient(135deg, #6B4E52 0%, #5A3E42 100%)",
+          borderRadius: 2,
+          p: { xs: 2.5, sm: 1.5 },
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: { xs: 2, sm: 1.5 },
+          mb: { xs: 2, sm: 1.5 },
+          border: "3px solid rgba(255, 255, 255, 0.12)",
         }}
       >
-        <strong style={{ color: "var(--text)" }}>How costs work:</strong> Enter{" "}
-        <em>Cost per unit</em> (e.g. $0.15 per gram) and <em>Package size</em> (e.g. 1000g bag).
-        The app calculates total cost = cost/unit x scaled quantity, and how many packages you
-        need to buyi.
-        {isScaled && (
-          <span>
-            {" "}
-            Currently scaled{" "}
-            <strong style={{ color: "var(--accent)" }}>{scale.toFixed(2)}x</strong> for{" "}
-            {attendees} attendees.
-          </span>
-        )}
-      </div> */}
+        <Box sx={{ textAlign: "center" }}>
+          <Typography
+            variant="h5"
+            sx={{ fontFamily: t => t.typography.h5.fontFamily, fontWeight: 700, color: workshopPalette.cream }}
+          >
+            ${totalCost.toFixed(2)}
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              mt: 0.5,
+              color: workshopPalette.tan,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            {isScaled ? `Total for ${attendees} ppl` : `Base batch cost`}
+          </Typography>
+        </Box>
+        <Box sx={{ textAlign: "center" }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontFamily: t => t.typography.h5.fontFamily,
+              fontWeight: 700,
+              color: ws.budget > 0 && budgetLeft < 0 ? "#FF7B7B" : workshopPalette.cream,
+            }}
+          >
+            {ws.budget > 0 ? `$${Math.abs(budgetLeft).toFixed(2)} ${budgetLeft < 0 ? "over" : "left"}` : "—"}
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              mt: 0.5,
+              color: workshopPalette.tan,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            {ws.budget > 0 ? `of $${ws.budget} budget` : "no budget set"}
+          </Typography>
+        </Box>
+        <Box sx={{ textAlign: "center" }}>
+          <Typography
+            variant="h5"
+            sx={{ fontFamily: t => t.typography.h5.fontFamily, fontWeight: 700, color: workshopPalette.cream }}
+          >
+            ${costPerPerson.toFixed(2)}
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              mt: 0.5,
+              color: workshopPalette.tan,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            per person
+          </Typography>
+        </Box>
+      </Box>
 
-      <div style={{ overflowX: "auto" }}>
-        <table className="ingredient-table">
-          <thead>
-            <tr>
-              <th style={{ minWidth: 130 }}>Ingredient</th>
-              <th>Base Qty</th>
-              <th>Unit</th>
-              <th>$/Unit</th>
-              <th>Pkg Size</th>
-              {isScaled && <th style={{ color: "var(--accent)" }}>Scaled Qty</th>}
-              {isScaled && <th>Pkgs to Buy</th>}
-              <th>Line Cost</th>
-              <th>Share</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          mb: 1,
+          border: `1px solid ${workshopPalette.stone}`,
+          borderRadius: 1,
+          bgcolor: "background.paper",
+          minWidth: 0,
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            minWidth: 0,
+            overflowX: "auto",
+            overflowY: "hidden",
+            display: "flex",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              minHeight: 0,
+              minWidth: "min-content",
+              width: "100%",
+            }}
+          >
+            <TableContainer
+              component={Paper}
+              elevation={0}
+              className="ingredient-table-mui"
+              sx={{
+                flex: "1 1 auto",
+                minHeight: 0,
+                maxHeight: {
+                  xs: `min(${INGREDIENT_TABLE_SCROLL_MAX_PX}px, 40vh)`,
+                  sm: INGREDIENT_TABLE_SCROLL_MAX_PX,
+                },
+                border: "none",
+                borderRadius: 0,
+                maxWidth: "none",
+                width: "100%",
+                overflowY: "auto",
+                overflowX: "auto",
+              }}
+            >
+        <Table
+          stickyHeader
+          size="small"
+          sx={{
+            width: "max-content",
+            minWidth: "100%",
+            tableLayout: "auto",
+            "& .ingredient-col-share": { minWidth: 120, whiteSpace: "nowrap" },
+            "& .ingredient-col-remove": { minWidth: 124, whiteSpace: "nowrap", boxSizing: "border-box" },
+          }}
+        >
+          <TableHead>
+            <TableRow
+              sx={{
+                "& th": {
+                  bgcolor: "rgba(237, 216, 205, 0.97)",
+                  color: workshopPalette.brown,
+                  fontWeight: 700,
+                  fontSize: "0.78rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  borderBottom: `1px solid ${workshopPalette.stone}`,
+                },
+              }}
+            >
+              <TableCell sx={{ minWidth: 200 }}>Ingredient</TableCell>
+              <TableCell sx={{ width: 76, minWidth: 76, maxWidth: 76, whiteSpace: "nowrap" }}>Base Qty</TableCell>
+              <TableCell sx={{ minWidth: 112 }}>Unit</TableCell>
+              <TableCell sx={{ minWidth: 136 }}>$/Unit</TableCell>
+              <TableCell sx={{ minWidth: 140 }}>Pkg Size</TableCell>
+              {isScaled && (
+                <TableCell sx={{ color: "primary.main", fontWeight: 700, width: 100, minWidth: 100 }}>
+                  Scaled Qty
+                </TableCell>
+              )}
+              {isScaled && (
+                <TableCell sx={{ width: 96, minWidth: 96 }}>Pkgs to Buy</TableCell>
+              )}
+              <TableCell sx={{ width: 96, minWidth: 96 }}>Line Cost</TableCell>
+              <TableCell className="ingredient-col-share">Share</TableCell>
+              <TableCell className="ingredient-col-remove" sx={{ px: 1.5, textAlign: "right" }}>
+                Remove
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {rows.map(ing => (
-              <tr key={ing.id}>
-                <td>
-                  <input
+              <TableRow key={ing.id}>
+                <TableCell sx={{ minWidth: 200, verticalAlign: "middle" }}>
+                  <TextField
+                    size="small"
+                    fullWidth
                     value={ing.name}
                     onChange={e => updateIngredient(ing.id, "name", e.target.value)}
                     placeholder="Ingredient"
+                    sx={{
+                      minWidth: 160,
+                      "& .MuiInputBase-input::placeholder": { opacity: "0.55" },
+                    }}
                   />
-                </td>
-                <td>
-                  <input
+                </TableCell>
+                <TableCell sx={{ width: 76, minWidth: 76, maxWidth: 76, verticalAlign: "middle", px: 1 }}>
+                  <TextField
+                    size="small"
                     type="number"
                     value={ing.baseQty}
-                    min="0"
-                    step="any"
+                    inputProps={{ min: 0, step: "any" }}
                     onChange={e => updateIngredient(ing.id, "baseQty", e.target.value)}
-                    style={{ width: 70 }}
-                  />
-                </td>
-                <td>
-                  <select
-                    value={ing.unit}
-                    onChange={e => updateIngredient(ing.id, "unit", e.target.value)}
-                    style={{
-                      border: "1.5px solid var(--stone)",
-                      borderRadius: 6,
-                      padding: "0.35rem 0.4rem",
-                      fontFamily: "inherit",
-                      fontSize: "0.9rem",
+                    sx={{
+                      width: 64,
+                      flexShrink: 0,
+                      "& .MuiOutlinedInput-root": { pr: 0.5 },
+                      "& input": { py: 0.75, textAlign: "center", px: 0.5 },
                     }}
-                  >
-                    {units.map(u => (
-                      <option key={u}>{u}</option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>$</span>
-                    <input
+                  />
+                </TableCell>
+                <TableCell sx={{ width: 112, minWidth: 112, verticalAlign: "middle" }}>
+                  <FormControl size="small" fullWidth sx={{ minWidth: 96 }}>
+                    <Select
+                      value={ing.unit}
+                      onChange={e => updateIngredient(ing.id, "unit", e.target.value)}
+                      sx={{
+                        borderRadius: 1.5,
+                        minWidth: 96,
+                        "& .MuiSelect-select": {
+                          overflow: "visible",
+                          textOverflow: "clip",
+                          minWidth: "3ch",
+                        },
+                      }}
+                    >
+                      {units.map(u => (
+                        <MenuItem key={u} value={u}>
+                          {u}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </TableCell>
+                <TableCell sx={{ minWidth: 136, verticalAlign: "middle" }}>
+                  <Stack direction="row" alignItems="center" spacing={0.5} sx={{ minWidth: 120 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
+                      $
+                    </Typography>
+                    <TextField
+                      size="small"
                       type="number"
                       value={ing.costPer}
-                      min="0"
-                      step="0.01"
+                      inputProps={{ min: 0, step: 0.01 }}
                       onChange={e => updateIngredient(ing.id, "costPer", e.target.value)}
-                      style={{ width: 72 }}
+                      sx={{ width: 96, flexShrink: 0 }}
                       placeholder="0.00"
                     />
-                  </div>
-                </td>
-                <td>
-                  <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                    <input
+                  </Stack>
+                </TableCell>
+                <TableCell sx={{ minWidth: 140, verticalAlign: "middle" }}>
+                  <Stack direction="row" alignItems="center" spacing={0.5} sx={{ minWidth: 0 }}>
+                    <TextField
+                      size="small"
                       type="number"
                       value={ing.packageSize}
-                      min="0.01"
-                      step="any"
+                      inputProps={{ min: 0.01, step: "any" }}
                       onChange={e => updateIngredient(ing.id, "packageSize", e.target.value)}
-                      style={{ width: 68 }}
+                      sx={{ minWidth: 72, width: 88, flexShrink: 0 }}
                     />
-                    <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                    <Typography variant="caption" color="text.secondary">
                       {ing.unit}
-                    </span>
-                  </div>
-                </td>
+                    </Typography>
+                  </Stack>
+                </TableCell>
                 {isScaled && (
-                  <td>
-                    <span className="scaled-val">
-                      {ing.scaledQty % 1 === 0 ? ing.scaledQty : ing.scaledQty.toFixed(1)}{" "}
-                      {ing.unit}
-                    </span>
-                  </td>
+                  <TableCell>
+                    <Typography fontWeight={600} color="primary.main">
+                      {ing.scaledQty % 1 === 0 ? ing.scaledQty : ing.scaledQty.toFixed(1)} {ing.unit}
+                    </Typography>
+                  </TableCell>
                 )}
                 {isScaled && (
-                  <td>
-                    <span
-                      style={{
-                        fontWeight: 600,
-                        color: ing.pkgsNeeded > 0 ? "var(--green)" : "var(--text-muted)",
-                      }}
+                  <TableCell>
+                    <Typography
+                      fontWeight={600}
+                      color={ing.pkgsNeeded > 0 ? "success.main" : "text.secondary"}
                     >
                       {ing.pkgsNeeded > 0 ? `x${ing.pkgsNeeded}` : "-"}
-                    </span>
-                  </td>
+                    </Typography>
+                  </TableCell>
                 )}
-                <td>
-                  <span
-                    style={{
-                      fontWeight: 600,
-                      color: ing.lineCost > 0 ? "var(--text)" : "var(--text-muted)",
-                    }}
+                <TableCell>
+                  <Typography
+                    fontWeight={600}
+                    color={ing.lineCost > 0 ? "text.primary" : "text.secondary"}
                   >
                     {ing.lineCost > 0 ? `$${ing.lineCost.toFixed(2)}` : "—"}
-                  </span>
-                </td>
-                <td>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.4rem",
-                      minWidth: 70,
+                  </Typography>
+                </TableCell>
+                <TableCell className="ingredient-col-share">
+                  <Stack direction="row" alignItems="center" spacing={0.75} sx={{ minWidth: 0 }}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.min(ing.pctOfTotal, 100)}
+                      sx={{
+                        flex: "1 1 auto",
+                        minWidth: 48,
+                        height: 5,
+                        borderRadius: 0,
+                        bgcolor: workshopPalette.stone,
+                        "& .MuiLinearProgress-bar": { bgcolor: "primary.main", borderRadius: 0 },
+                      }}
+                    />
+                    <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0, width: 32, textAlign: "right" }}>
+                      {ing.pctOfTotal.toFixed(0)}%
+                    </Typography>
+                  </Stack>
+                </TableCell>
+                <TableCell className="ingredient-col-remove" sx={{ px: 1.5, textAlign: "right", verticalAlign: "middle" }}>
+                  <Button
+                    size="small"
+                    onClick={() => removeIngredient(ing.id)}
+                    sx={{
+                      textTransform: "none",
+                      color: "primary.main",
+                      fontWeight: 600,
+                      whiteSpace: "nowrap",
+                      px: 1,
                     }}
                   >
-                    <div
-                      style={{
-                        flex: 1,
-                        height: 5,
-                        background: "var(--stone)",
-                        borderRadius: 3,
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: "100%",
-                          width: ing.pctOfTotal + "%",
-                          background: "var(--accent)",
-                          borderRadius: 3,
-                          transition: "width 0.3s",
-                        }}
-                      />
-                    </div>
-                    <span
-                      style={{
-                        fontSize: "0.76rem",
-                        color: "var(--text-muted)",
-                        width: 28,
-                        textAlign: "right",
-                      }}
-                    >
-                      {ing.pctOfTotal.toFixed(0)}%
-                    </span>
-                  </div>
-                </td>
-                <td>
-                  <button className="icon-btn" onClick={() => removeIngredient(ing.id)}>Remove</button>
-                </td>
-              </tr>
+                    Remove
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-          {rows.length > 0 && (
-            <tfoot>
-              <tr>
-                <td
-                  colSpan={isScaled ? 7 : 5}
-                  style={{ paddingTop: "0.75rem", fontSize: "0.82rem", color: "var(--text-muted)" }}
-                >
+          </TableBody>
+        </Table>
+            </TableContainer>
+            {rows.length > 0 && (
+              <Box
+                sx={{
+                  flexShrink: 0,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "baseline",
+                  justifyContent: "space-between",
+                  gap: 2,
+                  rowGap: 1.5,
+                  px: 2,
+                  py: 2,
+                  borderTop: `1px solid ${workshopPalette.stone}`,
+                  bgcolor: "#fff",
+                }}
+              >
+                <Typography sx={{ color: "text.secondary", fontSize: "0.82rem", flexShrink: 0 }}>
                   {rows.length} ingredient{rows.length !== 1 ? "s" : ""}
-                </td>
-                <td
-                  style={{
-                    paddingTop: "0.75rem",
-                    fontWeight: 700,
-                    fontSize: "1rem",
-                    color: "var(--text)",
-                  }}
+                </Typography>
+                <Stack
+                  direction="row"
+                  alignItems="baseline"
+                  spacing={1.25}
+                  sx={{ flexShrink: 0, flexWrap: "nowrap", whiteSpace: "nowrap" }}
                 >
-                  ${totalCost.toFixed(2)}
-                </td>
-                <td colSpan={2} />
-              </tr>
-            </tfoot>
-          )}
-        </table>
-      </div>
+                  <Typography
+                    sx={{
+                      fontSize: "0.78rem",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: workshopPalette.textMuted,
+                      fontWeight: 700,
+                    }}
+                  >
+                    Total Batch Cost
+                  </Typography>
+                  <Typography component="span" sx={{ fontWeight: 700, fontSize: "2rem", lineHeight: 1 }}>
+                    ${totalCost.toFixed(2)}
+                  </Typography>
+                </Stack>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Box>
 
-      <button className="add-row-btn" onClick={addIngredient}>
+      <Button
+        fullWidth
+        onClick={addIngredient}
+        sx={{
+          flexShrink: 0,
+          mt: 0,
+          py: 1.2,
+          border: `2px dashed ${workshopPalette.accentLight}`,
+          borderRadius: 2,
+          bgcolor: "rgba(255, 232, 210, 0.45)",
+          color: workshopPalette.brown,
+          fontWeight: 600,
+          textTransform: "none",
+          fontFamily: t => t.typography.h6.fontFamily,
+          "&:hover": {
+            borderColor: "primary.main",
+            color: "primary.main",
+            bgcolor: "rgba(255, 201, 193, 0.4)",
+          },
+        }}
+      >
         + Add Ingredient
-      </button>
-
-      <div className="divider" style={{ marginTop: "1.5rem" }} />
-
-      <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end", flexWrap: "wrap" }}>
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Total Budget ($)</label>
-          <input
-            type="number"
-            className="form-input"
-            value={ws.budget}
-            min="0"
-            step="5"
-            onChange={e => update({ budget: parseFloat(e.target.value) || 0 })}
-            style={{ maxWidth: 160 }}
-          />
-        </div>
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Base Recipe Serves</label>
-          <input
-            type="number"
-            className="form-input"
-            value={ws.baseServings}
-            min="1"
-            onChange={e => update({ baseServings: parseInt(e.target.value, 10) || 1 })}
-            style={{ maxWidth: 120 }}
-          />
-        </div>
-        {ws.budget > 0 && (
-          <div style={{ paddingBottom: "0.1rem" }}>
-            <span className={`chip ${budgetLeft < 0 ? "chip-orange" : "chip-green"}`}>
-              {budgetLeft < 0
-                ? `$${Math.abs(budgetLeft).toFixed(2)} over budget`
-                : `$${budgetLeft.toFixed(2)} under budget`}
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
+      </Button>
+    </Box>
   );
 }
-

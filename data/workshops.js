@@ -6,6 +6,13 @@ function uuid() {
   return `${Date.now()}-${Math.random()}`; // fallback (may not satisfy UUID columns)
 }
 
+function stableAccentIndexFromId(id) {
+  if (!id || typeof id !== "string") return 0;
+  let h = 0;
+  for (let i = 0; i < id.length; i += 1) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return h % 4;
+}
+
 function toWorkshopRow(ws) {
   return {
     id: ws.id,
@@ -16,6 +23,7 @@ function toWorkshopRow(ws) {
     rsvp_count: ws.rsvpCount,
     base_servings: ws.baseServings,
     timeline: ws.timeline,
+    card_accent_index: ws.cardAccentIndex ?? 0,
   };
 }
 
@@ -32,6 +40,14 @@ function toIngredientRows(ws) {
 }
 
 function fromWorkshopRow(row) {
+  const rawAccent = row.card_accent_index ?? row.cardAccentIndex;
+  let cardAccentIndex;
+  if (rawAccent != null && rawAccent !== "") {
+    const v = Math.floor(Number(rawAccent));
+    cardAccentIndex = Number.isFinite(v) ? ((v % 4) + 4) % 4 : stableAccentIndexFromId(row.id);
+  } else {
+    cardAccentIndex = stableAccentIndexFromId(row.id);
+  }
   return {
     id: row.id,
     name: row.name,
@@ -41,6 +57,7 @@ function fromWorkshopRow(row) {
     rsvpCount: row.rsvp_count ?? row.rsvpCount ?? 0,
     baseServings: row.base_servings ?? row.baseServings ?? 1,
     timeline: row.timeline ?? JSON.parse(JSON.stringify(DEFAULT_TIMELINE)),
+    cardAccentIndex,
     ingredients: [],
   };
 }
@@ -104,7 +121,9 @@ export async function saveWorkshops(workshops) {
   }
   try {
     const wsRows = (workshops || []).map(toWorkshopRow);
-    const { error: wsErr } = await supabase.from("workshops").upsert(wsRows);
+    const { error: wsErr } = await supabase
+      .from("workshops")
+      .upsert(wsRows, { onConflict: "id" });
     if (wsErr) throw wsErr;
 
     const ingredientRows = (workshops || []).flatMap(toIngredientRows);
@@ -130,7 +149,9 @@ export async function saveWorkshops(workshops) {
     }
 
     if (ingredientRows.length > 0) {
-      const { error: ingErr } = await supabase.from("ingredients").upsert(ingredientRows);
+      const { error: ingErr } = await supabase
+        .from("ingredients")
+        .upsert(ingredientRows, { onConflict: "id" });
       if (ingErr) throw ingErr;
     }
 
@@ -177,17 +198,20 @@ export const DEFAULT_TIMELINE = {
   ],
 };
 
-export function createWorkshopFromForm(form) {
+export function createWorkshopFromForm(form, cardAccentIndex = 0) {
   const idBase = uuid();
+  const n = 4;
+  const idx = ((Math.floor(Number(cardAccentIndex)) % n) + n) % n;
   return {
     id: idBase,
     name: form.name,
     date: form.date,
-    capacity: parseInt(form.capacity, 10) || 20,
+    capacity: parseInt(form.capacity, 10) || 0,
     budget: parseFloat(form.budget) || 0,
     rsvpCount: 0,
     baseServings: 4,
     timeline: JSON.parse(JSON.stringify(DEFAULT_TIMELINE)),
+    cardAccentIndex: idx,
     ingredients: [],
   };
 }
