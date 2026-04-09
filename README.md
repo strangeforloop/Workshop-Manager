@@ -1,16 +1,17 @@
 # Cooking Workshop Manager
 
-A React app for planning and managing cooking workshops. Track RSVPs, scale ingredient quantities, manage budgets, and organize prep timelines.
+A React app for planning and managing cooking workshops. Track RSVPs, scale ingredient quantities, and manage budgets.
 
 **Live site:** https://strangeforloop.github.io/Workshop-Manager/
+
+<img width="3258" height="1724" alt="image" src="https://github.com/user-attachments/assets/7d39a86c-949f-48e0-9219-d73e54397fad" />
 
 ## Features
 
 - Create and manage multiple workshops
-- RSVP tracking with capacity fill percentage
+- RSVP tracking
 - Ingredient scaling based on attendee count
 - Budget tracking with per-person cost breakdown
-- Prep timeline checklists (week before, day before, day of)
 
 ## Tech Stack
 
